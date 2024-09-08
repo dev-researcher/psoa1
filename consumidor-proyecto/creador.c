@@ -143,7 +143,7 @@ void activate(GtkApplication *app, gpointer user_data) {
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_widget_set_hexpand(scrolled_window, TRUE);
     gtk_widget_set_vexpand(scrolled_window, TRUE);
-    gtk_grid_attach(GTK_GRID(grid), scrolled_window, 0, 0, 3, 1);
+    gtk_grid_attach(GTK_GRID(grid), scrolled_window, 3, 1, 3, 1);
     
     log_view = gtk_text_view_new();
     gtk_widget_set_vexpand(log_view, TRUE);  // Expansión vertical
@@ -154,10 +154,10 @@ void activate(GtkApplication *app, gpointer user_data) {
     gtk_container_add(GTK_CONTAINER(scrolled_window), log_view);
 
     // Crear un label para mostrar el estado del buffer
-    buffer_label = gtk_label_new("Buffer vacío");
-    gtk_grid_attach(GTK_GRID(grid), buffer_label, 0, 1, 3, 1);
-    pthread_t thread;
-    pthread_create(&thread, NULL, loadEvents, NULL);
+    // buffer_label = gtk_label_new("Buffer vacío");
+    // gtk_grid_attach(GTK_GRID(grid), buffer_label, 3, 1, 3, 1);
+    // pthread_t thread;
+    // pthread_create(&thread, NULL, loadEvents, NULL);
 
     gtk_widget_show_all(window);
 }
