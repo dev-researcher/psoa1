@@ -133,7 +133,7 @@ void activate(GtkApplication *app, gpointer user_data) {
     // Crear ventana
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), "Monitor del Sistema");
-    gtk_window_set_default_size(GTK_WINDOW(window), 400, 300);
+    gtk_window_set_default_size(GTK_WINDOW(window), 800, 300);
 
     // Crear un grid para colocar los widgets
     grid = gtk_grid_new();
@@ -143,7 +143,7 @@ void activate(GtkApplication *app, gpointer user_data) {
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_widget_set_hexpand(scrolled_window, TRUE);
     gtk_widget_set_vexpand(scrolled_window, TRUE);
-    gtk_grid_attach(GTK_GRID(grid), scrolled_window, 0, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), scrolled_window, 0, 0, 4, 1);
     
     log_view = gtk_text_view_new();
     gtk_widget_set_vexpand(log_view, TRUE);  // Expansión vertical
@@ -155,7 +155,7 @@ void activate(GtkApplication *app, gpointer user_data) {
 
     // Crear un label para mostrar el estado del buffer
     buffer_label = gtk_label_new("Buffer vacío");
-    gtk_grid_attach(GTK_GRID(grid), buffer_label, 0, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), buffer_label, 0, 1, 4, 1);
     pthread_t thread;
     pthread_create(&thread, NULL, loadEvents, NULL);
 
