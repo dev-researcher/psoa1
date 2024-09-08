@@ -1,3 +1,5 @@
+
+#include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,8 +14,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <gtk/gtk.h>
 #include "../consumidor-gui/log_api.h"
 #include "../consumidor-gui/buffer_api.h"
 #include "../consumidor-gui/process_api.h"
