@@ -155,17 +155,6 @@ void activate(GtkApplication *app, gpointer user_data) {
     pthread_t thread;
     pthread_create(&thread, NULL, loadEvents, NULL);
 
-
-    // Botón para crear productor
-    btn_create_productor = gtk_button_new_with_label("Crear Productor");
-    g_signal_connect(btn_create_productor, "clicked", G_CALLBACK(create_new_process), GINT_TO_POINTER(TRUE));
-    gtk_grid_attach(GTK_GRID(grid), btn_create_productor, 0, 2, 1, 1);
-
-    // Botón para crear consumidor
-    btn_create_consumidor = gtk_button_new_with_label("Crear Consumidor");
-    g_signal_connect(btn_create_consumidor, "clicked", G_CALLBACK(create_new_process), GINT_TO_POINTER(FALSE));
-    gtk_grid_attach(GTK_GRID(grid), btn_create_consumidor, 1, 2, 1, 1);
-
     gtk_widget_show_all(window);
 }
 
