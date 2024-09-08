@@ -71,7 +71,7 @@ char * create_shared_buffer(const char * shared_buffer_name, size_t buffer_size)
         exit(1);
     }
     ftruncate(shared_buffer_file_descriptor, buffer_size);
-    char * shared_buffer = (char *) 
+    char * shared_buffer = (char *)
         mmap(NULL, buffer_size, PROT_READ | PROT_WRITE, MAP_SHARED, shared_buffer_file_descriptor, 0);
     if (shared_buffer == NULL) {
         perror("Failed to mmap shared buffer.");
