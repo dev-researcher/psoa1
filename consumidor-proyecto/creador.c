@@ -30,9 +30,8 @@ char buffer_data[256];
 int num_productores = 0;
 int num_consumidores = 0;
 
-char * ui_buffer;
+
 int ui_buffer_current_pos = -1;
-int total_buffer_size = 200 * GUI_ENTRY_BYTE_SIZE;
 sem_t * buffer_gui_sem;
 sem_t * empty_gui_sem;
 sem_t * full_gui_sem;
@@ -110,14 +109,14 @@ void init_gui() {
 
 void *loadEvents(void *threadid)
 {
+    int gui_total_size = GUI_ENTRIES * GUI_ENTRY_BYTE_SIZE;
     while(1) {
-
-        while(ui_buffer_current_pos < total_buffer_size && ui_buffer[ui_buffer_current_pos+1] != '\0')
+        while(ui_buffer_current_pos < gui_total_size && shared_buffer_gui[ui_buffer_current_pos+1] != '\0')
         {
 
             printf("%d\n", ui_buffer_current_pos);
-            add_log_message(ui_buffer+ui_buffer_current_pos+1);
-           for(; ui_buffer_current_pos < total_buffer_size && ui_buffer[ui_buffer_current_pos+1] != '\0'; ui_buffer_current_pos++) {
+            add_log_message(shared_buffer_gui+ui_buffer_current_pos+1);
+           for(; ui_buffer_current_pos < gui_total_size && shared_buffer_gui[ui_buffer_current_pos+1] != '\0'; ui_buffer_current_pos++) {
             }
         }
         sleep(2);
@@ -209,42 +208,7 @@ int main(int argc, char* argv[]) {
 
     ///////////////////
     // Shared UI 
-    size_t gui_entries = 200;
-    size_t gui_size = gui_entries * GUI_ENTRY_BYTE_SIZE;
-
-    const char * shared_gui_metadata_name = "shared_gui_memory_metadata";
-
-    shared_gui_metadata * metadata_gui = create_shared_gui_metadata(shared_gui_metadata_name, gui_size);
-
-    const char * shared_gui_buffer_name = "shared_gui_buffer";
-    char * shared_buffer_gui = create_shared_buffer(shared_gui_buffer_name,  gui_size);
-
-    ui_buffer = shared_buffer_gui;
-
-
-    buffer_gui_sem = sem_open(BUFFER_SEM_GUI_NAME, O_CREAT | O_EXCL, 0666, 1);
-    if (buffer_gui_sem == SEM_FAILED) {
-        perror("sem_open for buffer_sem failed");
-        exit(EXIT_FAILURE);
-    }
-
-    empty_gui_sem = sem_open(EMPTY_SEM_GUI_NAME, O_CREAT | O_EXCL, 0666, gui_entries);
-    if (empty_gui_sem == SEM_FAILED) {
-        perror("sem_open for empty_sem failed");
-        sem_close(buffer_gui_sem);
-        sem_unlink(BUFFER_SEM_GUI_NAME);
-        exit(EXIT_FAILURE);
-    }
-
-    full_gui_sem = sem_open(FULL_SEM_NAME, O_CREAT | O_EXCL, 0666, 0);
-    if (full_sem == SEM_FAILED) {
-        perror("sem_open for full_sem failed");
-        sem_close(buffer_gui_sem);
-        sem_close(empty_gui_sem);
-        sem_unlink(BUFFER_SEM_GUI_NAME);
-        sem_unlink(EMPTY_SEM_GUI_NAME);
-        exit(EXIT_FAILURE);
-    }
+    create_logger();
     ///////////////////
 
     GtkApplication *app;
@@ -281,20 +245,7 @@ int main(int argc, char* argv[]) {
     munmap(index_table, sizeof(int) * buffer_entries);
 
     /////////////////////////////////////////////////
-    sem_unlink(BUFFER_SEM_GUI_NAME);
-    sem_unlink(EMPTY_SEM_GUI_NAME);
-    sem_unlink(FULL_SEM_GUI_NAME);
-    
-    sem_close(empty_gui_sem);
-    sem_close(full_gui_sem);
-    sem_close(buffer_gui_sem);
-
-    shm_unlink(shared_gui_metadata_name);
-    shm_unlink(shared_gui_buffer_name);
-
-    munmap(metadata_gui, sizeof(shared_gui_metadata));
-    munmap(shared_buffer_gui, sizeof(char) * gui_size);
-
+    finalize_logger();
     ///////////////////////////////////////////////////
 
     return 0;

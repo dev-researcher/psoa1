@@ -55,53 +55,15 @@ int main(int argc, char* argv[]) {
 
 /////////////////////////////////////////
     // ACCESSING THE SHARED GUI'S METADATA 
-    const char * shared_gui_metadata_name = "shared_gui_memory_metadata";
-    shared_gui_metadata * metadat_gui = get_shared_gui_metadata(shared_gui_metadata_name);
-    sem_t * buffer_gui_sem = sem_open(BUFFER_SEM_GUI_NAME, 0);
-    if (buffer_gui_sem == SEM_FAILED) {
-        perror("sem_open for buffer_sem failed");
-        exit(EXIT_FAILURE);
-    }
-    sem_t * empty_gui_sem = sem_open(EMPTY_SEM_GUI_NAME, 0);
-    if (empty_sem == SEM_FAILED) {
-        perror("sem_open for empty_sem failed");
-        sem_close(buffer_sem);
-        exit(EXIT_FAILURE);
-    }
-    sem_t * full_gui_sem = sem_open(FULL_SEM_GUI_NAME, 0);
-    if (full_sem == SEM_FAILED) {
-        perror("sem_open for full_sem failed");
-        sem_close(buffer_sem);
-        sem_close(empty_sem);
-        exit(EXIT_FAILURE);
-    }
-    // se incrementa el numero de productores vivos ademas del numero de productores alguna vez creados
+    init_logger();
     sem_wait(buffer_gui_sem);
-        metadat_gui->producers_alive += 1;
-        metadat_gui->producers_created += 1;
+        metadata_gui->producers_alive += 1;
+        metadata_gui->producers_created += 1;
     sem_post(buffer_gui_sem);
-    // ACCESING THE LOGs SHARED BUFFER
-    const char * shared_gui_buffer_name = "shared_gui_buffer";
-    char * shared_buffer_gui = get_shared_buffer(shared_gui_buffer_name, metadat_gui->buffer_size);
-
-    // se agrega un log para el UI con el evento de creación de un nuevo productor
-    sem_wait(empty_gui_sem);
-        sem_wait(buffer_gui_sem);
-            char * current_time_string = generate_current_time_string();
-            char * random_key_string = generate_random_key_string();
-            char * strings_to_concatenate[] = {current_time_string, ": Nuevo Productor creado, PID: ", pid_string};
-            char * concatenated_string = concatenate_strings(strings_to_concatenate, 3);
-
-            size_t inserted_index = insert_message_in_buffer(shared_buffer_gui, metadat_gui->buffer_size, concatenated_string);
-
-            free(current_time_string);
-            free(random_key_string);
-            free(concatenated_string);
-        sem_post(buffer_gui_sem);
-    sem_post(full_gui_sem);
-
-
-
+    char * strings_to_concatenate[] = {"Nuevo Productor creado, PID: ", pid_string};
+    char * concatenated_string = string_concat(strings_to_concatenate, 2);
+    add_log(concatenated_string);
+    free(concatenated_string);
 
 ///////////////////////////////////////
     while (1) {
@@ -126,37 +88,19 @@ int main(int argc, char* argv[]) {
             sem_post(buffer_sem);
         sem_post(full_sem);
         // Se publica un evento indicando que un nuevo mensaje ha sido publicado
-        sem_wait(empty_gui_sem);
-            sem_wait(buffer_gui_sem);
-                char * current_time_string_d = generate_current_time_string();
-                char * strings_to_concatenate_d []  = {current_time_string_d, ": Un nuevo mensaje ha sido publicado por el PID: ", pid_string, "\n"};
-                char * concatenated_string_d = concatenate_strings(strings_to_concatenate_d, 4);
-
-                size_t  inserted_index_d = insert_message_in_buffer(shared_buffer_gui, metadat_gui->buffer_size, concatenated_string_d);
-
-                free(current_time_string_d);
-                free(concatenated_string_d);
-            sem_post(buffer_gui_sem);
-        sem_post(full_gui_sem); 
+        char * strings_to_concatenate_log[]  = {" - Un nuevo mensaje ha sido publicado por el PID: ", pid_string};
+        concatenated_string = string_concat(strings_to_concatenate_log, 2);
+        add_log(concatenated_string);
 
     }
     // se decrementa el numero de productores vivos
     sem_wait(buffer_gui_sem);
-        metadat_gui->producers_alive += -1;
+        metadata_gui->producers_alive += -1;
     sem_post(buffer_gui_sem);
     // se agrega un log indicando que ya se ha detenido el proceso
-    sem_wait(empty_gui_sem);
-        sem_wait(buffer_gui_sem);
-            char * current_time_string_s = generate_current_time_string();
-            char * random_key_string_s = generate_random_key_string();
-            char * strings_to_concatenate_s[] = {current_time_string, ": Productor detenido, PID: ", pid_string, "\n"};
-            char * concatenated_string_s = concatenate_strings(strings_to_concatenate_s, 4);
-            size_t inserted_index_s = insert_message_in_buffer(shared_buffer_gui, metadat_gui->buffer_size, concatenated_string_s);
-            free(current_time_string_s);
-            free(random_key_string_s);
-            free(concatenated_string_s);
-        sem_post(buffer_gui_sem);
-    sem_post(full_gui_sem);
+    char * strings_to_concatenate_log[] = {" - Productor detenido, PID: ", pid_string};
+    concatenated_string = string_concat(strings_to_concatenate_log, 2);
+    add_log(concatenated_string);
     free(pid_string);
 }
 
