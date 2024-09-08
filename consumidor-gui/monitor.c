@@ -18,44 +18,35 @@ void activate(GtkApplication *app, gpointer user_data) {
     GtkWidget *window;
     GtkWidget *grid;
     GtkWidget *scrolled_window;
-    GtkWidget *btn_create_productor, *btn_create_consumidor;
 
     // Crear ventana
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), "Monitor del Sistema");
-    gtk_window_set_default_size(GTK_WINDOW(window), 200, 200);
+    gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);  // Aumentar el tamaño predeterminado para más espacio
 
     // Crear un grid para colocar los widgets
     grid = gtk_grid_new();
+    gtk_container_set_border_width(GTK_CONTAINER(grid), 10); // Agrega un margen
     gtk_container_add(GTK_CONTAINER(window), grid);
 
     // Crear un área de texto para la bitácora
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_widget_set_vexpand(scrolled_window, TRUE);
     gtk_widget_set_hexpand(scrolled_window, TRUE);
-    gtk_grid_attach(GTK_GRID(grid), scrolled_window, 4, 4, 4, 4);
-    
+    gtk_grid_attach(GTK_GRID(grid), scrolled_window, 0, 0, 1, 1); // Cambia las coordenadas y el tamaño de la grid
+
     log_view = gtk_text_view_new();
-    gtk_widget_set_vexpand(log_view, TRUE);  // Expansión vertical
-    gtk_widget_set_hexpand(log_view, TRUE);  // Expansión horizontal
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(log_view), GTK_WRAP_WORD);
+    gtk_widget_set_vexpand(log_view, TRUE);
+    gtk_widget_set_hexpand(log_view, TRUE);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(log_view), GTK_WRAP_WORD_CHAR); // Ajuste de línea más flexible
     gtk_text_view_set_editable(GTK_TEXT_VIEW(log_view), FALSE);
     log_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(log_view));
     gtk_container_add(GTK_CONTAINER(scrolled_window), log_view);
 
     // Crear un label para mostrar el estado del buffer
     buffer_label = gtk_label_new("Buffer vacío");
-    gtk_grid_attach(GTK_GRID(grid), buffer_label, 4, 4, 4, 4;
-
-// Botón para crear productor
-    btn_create_productor = gtk_button_new_with_label("Crear Productor");
-    g_signal_connect(btn_create_productor, "clicked", G_CALLBACK(create_new_process), GINT_TO_POINTER(TRUE));
-    gtk_grid_attach(GTK_GRID(grid), btn_create_productor, 4, 4 4, 4);
-
-    // Botón para crear consumidor
-    btn_create_consumidor = gtk_button_new_with_label("Crear Consumidor");
-    g_signal_connect(btn_create_consumidor, "clicked", G_CALLBACK(create_new_process), GINT_TO_POINTER(FALSE));
-    gtk_grid_attach(GTK_GRID(grid), btn_create_consumidor, 4, 4, 4, 4);
+    gtk_widget_set_halign(buffer_label, GTK_ALIGN_START); // Alinear a la izquierda
+    gtk_grid_attach(GTK_GRID(grid), buffer_label, 0, 1, 1, 1); // Ajustar posición en la grid
 
     gtk_widget_show_all(window);
 }
