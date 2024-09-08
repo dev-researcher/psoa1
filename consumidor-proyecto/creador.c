@@ -141,10 +141,14 @@ void activate(GtkApplication *app, gpointer user_data) {
 
     // Crear un área de texto para la bitácora
     scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_widget_set_hexpand(scrolled_window, TRUE);
     gtk_widget_set_vexpand(scrolled_window, TRUE);
     gtk_grid_attach(GTK_GRID(grid), scrolled_window, 0, 0, 3, 1);
     
     log_view = gtk_text_view_new();
+    gtk_widget_set_vexpand(log_view, TRUE);  // Expansión vertical
+    gtk_widget_set_hexpand(log_view, TRUE);  // Expansión horizontal
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(log_view), GTK_WRAP_WORD);
     gtk_text_view_set_editable(GTK_TEXT_VIEW(log_view), FALSE);
     log_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(log_view));
     gtk_container_add(GTK_CONTAINER(scrolled_window), log_view);
